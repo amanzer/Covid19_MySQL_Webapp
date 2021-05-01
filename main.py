@@ -31,10 +31,10 @@ class Parser:
         return frame.iterrows()
 
 
-    # def get_hospitals_data(self):
-    #     frame = pd.read_csv(self.hospitals, sep=",")
-    #     frame.fillna('')
-    #     return frame.iterrows()
+    def get_hospitals_data(self):
+        frame = pd.read_csv(self.hospitals, sep=",")
+        frame = frame.replace({np.NAN: None})
+        return frame.iterrows()
 
     def get_person_and_epidemiologist_data(self):
         frame = pd.read_csv(self.hospitals, sep=',')
@@ -80,10 +80,9 @@ class DataBase:
         self.insertIntoClimate(self.parser.get_climate_data(), connection)
         self.insertIntoCountry(self.parser.get_country_data(), connection)
         self.insertIntoVaccine(connection)
-        self.insertIntoVaccineCountry(connection)
-        # self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
+        #self.insertIntoVaccineCountry(connection)
         self.insertIntoPersonAndEpidemiologist(self.parser.get_person_and_epidemiologist_data(), connection)
-
+        self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
         self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)  # Ne fonctionne pas erreur :
         # IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`coviddata`.`vaccinations`, CONSTRAINT `vaccinations_ibfk_1` FOREIGN KEY (`iso_code`) REFERENCES `country` (`iso_code`))')
 
@@ -158,12 +157,12 @@ class DataBase:
 
     def createHospitalsTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS hospitalsData(iso_code varchar(3) NOT NULL," \
+            sql = "CREATE TABLE IF NOT EXISTS hospitalsData(id INT AUTO_INCREMENT PRIMARY KEY ," \
+                  "iso_code varchar(3) NOT NULL," \
                   " date DATE NOT NULL," \
                   " icu_patients INT(10)  unsigned NOT NULL," \
                   " hosp_patients INT(10) unsigned NOT NULL, " \
                   " source_epidemiologist VARCHAR(40) NOT NULL," \
-                  "PRIMARY KEY(iso_code, date)," \
                   "FOREIGN KEY (iso_code) REFERENCES country(iso_code), " \
                   "FOREIGN KEY (source_epidemiologist) REFERENCES epidemiologist(id_person))"
             cursor.execute(sql)
@@ -215,11 +214,7 @@ class DataBase:
             connection.commit()
 
     def insertIntoVaccineCountry(self, connection):
-        with connection.cursor() as cursor:
-            sql = "INSERT INTO"
-            cursor.execute(sql, (iso_code, date, tests, vaccinations_done))
-
-        connection.commit()
+        pass
 
 
 
@@ -246,15 +241,17 @@ class DataBase:
             date = elem["date"]
             icu_patients = elem["icu_patients"]
             hosp_patients = elem["hosp_patients"]
-            source_epidemiologist = ["source_epidemiologiste"]
+            source_epidemiologist = elem["source_epidemiologiste"]
 
             with connection.cursor() as cursor:
-                sql = "INSERT INTO hopsitalsdata (iso_code, \
+
+                sql = "INSERT INTO hospitalsdata (iso_code, \
                    date, \
                    icu_patients, \
                    hosp_patients, \
                    source_epidemiologist) VALUES (%s, %s, %s, %s, %s)"
                 cursor.execute(sql, (iso_code, date, icu_patients, hosp_patients, source_epidemiologist))
+
             connection.commit()
 
 
@@ -293,5 +290,5 @@ if __name__ == '__main__':
     # db.get_country_data()
 
     #testParser = Parser(files_to_parse)
-    #testParser.get_person_and_epidemiologist_data()
+    #testParser.get_hospitals_data()
 
