@@ -1,0 +1,55 @@
+2)
+
+SELECT max(sum(vaccination_done)), vaccination.iso_code, country.country
+FROM vaccinations JOIN Country on vaccinations.iso_code = Country.iso_code
+group by vaccinations.iso_code
+
+
+SELECT max(sum(vaccinations_done)), vaccinations.iso_code, country.country    =====> Utilisation invalide de la clause GROUP
+FROM vaccinations JOIN Country on vaccinations.iso_code = Country.iso_code
+group by vaccinations.iso_code
+
+
+3)
+
+SELECT id, ARRAY(SELECT Country.country
+		FROM Vaccine JOIN CountryVaccine on Vaccine.id = CountryVaccine.vaccine_id JOIN Country on CountryVaccine.iso_code = Country.iso_code
+		WHERE vaccine.id = id
+		group by vaccine.id)
+FROM Vaccine
+
+
+SELECT vaccine.id, CountryVaccine.iso_code, Country.country
+FROM Vaccine JOIN CountryVaccine on Vaccine.id = CountryVaccine.vaccine_id JOIN Country on CountryVaccine.iso_code = Country.iso_code
+group by vaccine.id
+
+
+4)
+
+SELECT iso_code, HostpitalsData.hosp_patients/country.population
+FROM Hospitals_Data
+WHERE date = '2021-01-01'
+
+
+
+SELECT iso_code, hospitalsdata.hosp_patients/country.population         ====> Champ 'country.population' inconnu dans field list
+FROM hospitalsdata
+WHERE date = '2021-01-01'
+
+5)
+
+SELECT iso_code, date, hosp_patient, hosp_patient-(select host_patient
+						FROM Hospitals_Data
+						WHERE date = subdate(currentDate, 1))
+FROM Hospitals_Data
+
+6)
+
+Select Vaccine.name, Vaccine.id
+FROM Vaccine JOIN CountryVaccine on Vaccine.id = CountryVaccine.vaccine_id
+WHERE vaccine.id IN ( Select vaccine_id
+			FROM CountryVaccine
+			WHERE iso_Code = "FRA")
+AND  vaccine.id IN ( Select vaccine_id
+			FROM CountryVaccine
+			WHERE iso_Code = "BEL")
