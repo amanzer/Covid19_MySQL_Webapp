@@ -7,12 +7,25 @@
 <style>
 body {background-color:#ffb8b8;background-repeat:no-repeat;background-position:top left;background-attachment:fixed;}
 h1{text-align: center;font-family:Arial, sans-serif;color:#000000;background-color:#ffffff;}
-p {font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;}
+p {font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;}
 </style>
 <body>
 <h1>Welcome to Home Page</h1>
 
-<a href="{{ url_for('code_execution') }}"> Click here to execute the command</a>
+<h4 align="center">
+    {%  block content %}
+<form action="#" method="post">
+  <p> Requete:</p>
+    <p><input type="text" name ="req"> </p>
+    <p><input type="submit" value ="Confirmer"> </p>
+</form>
+{% endblock %}
+
+</h4>
+
+
+<h2 align="center"><a href="{{ url_for('run_command') }}"> Click here to execute the command</a></h2>
+
 
 </body>
 </html>
