@@ -11,25 +11,37 @@ mysql = MySQL(app)
 
 
 @app.route('/')
-@app.route('/index', methods=["POST", "GET"])
+@app.route('/index')
 def index():
     return render_template('index.html')
 
 
-@app.route('/results')
+@app.route('/results', methods=["POST", "GET"])
 def run_command():
-    cur = mysql.connection.cursor()
-    sqlQuery = "SELECT * FROM country;"
-    cur.execute(sqlQuery)
-    fetchedData = cur.fetchall()
-    cur.close()
-    return render_template('execution.html', data=fetchedData)
+    if request.method == "POST":
+        sqlQuery = request.form['req']
+        if sqlQuery != "":
+            try:
+                cur = mysql.connection.cursor()
+                cur.execute(sqlQuery)
+                fetchedData = cur.fetchall()
+                cur.close()
+            except:
+                return render_template('error.html')
+            finally:
+                if cur:
+                    cur.close()
+
+            return render_template('execution.html', data=fetchedData)
+        else:
+            return render_template('index.html')
+    else:
+        return render_template('index.html')
 
 
 @app.route('/Error')
 def error_handler():
     return render_template('error.html')
-
 
 
 if __name__ == '__main__':
