@@ -228,7 +228,6 @@ class DataBase:
                 vaccines = elem["vaccines"].split(",")
                 for vaccine in vaccines:
                     sql = "INSERT INTO CountryVaccine (iso_code, vaccine_id) VALUES (%s, %s)"
-                    print(vaccine)
                     try:
                         cursor.execute(sql,(elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
                     except:
@@ -257,6 +256,8 @@ class DataBase:
         for index, elem in data:
             iso_code = elem["iso_code"]
             date = elem["date"]
+            datesplit = date.split("/")
+            date = datesplit[2] + "-" + datesplit[1] + "-" + datesplit[0]
             icu_patients = elem["icu_patients"]
             hosp_patients = elem["hosp_patients"]
             source_epidemiologist = elem["source_epidemiologiste"]
