@@ -42,10 +42,10 @@ class Parser:
         newFrame = newFrame.drop_duplicates()
         return newFrame
 
-    # def get_producers_data(self):
-    #     frame = pd.read_csv(self.producers, sep=";")
-    #     frame.fillna('')
-    #     return frame.iterrows()
+    def get_producers_data(self):
+         frame = pd.read_csv(self.producers, sep=";")
+         frame.fillna('')
+         return frame.iterrows()
 
     def get_vaccinations_data(self):
         vaccinations = pd.read_csv(self.vaccinations, sep=",")
@@ -80,7 +80,7 @@ class DataBase:
         self.insertIntoClimate(self.parser.get_climate_data(), connection)
         self.insertIntoCountry(self.parser.get_country_data(), connection)
         self.insertIntoVaccine(connection)
-        #self.insertIntoVaccineCountry(connection)
+        self.insertIntoVaccineCountry(self.parser.get_producers_data(), connection)
         self.insertIntoPersonAndEpidemiologist(self.parser.get_person_and_epidemiologist_data(), connection)
         self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
         self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)  # Ne fonctionne pas erreur :
@@ -213,9 +213,27 @@ class DataBase:
                 cursor.execute(sql, (vaccin))
             connection.commit()
 
-    def insertIntoVaccineCountry(self, connection):
-        pass
-
+    def insertIntoVaccineCountry(self, data, connection):
+        switcher = {
+            "Pfizer/BioNTech" : 1,
+            "Sinopharm" : 2,
+            "Sputnik V" : 3 ,
+            "Moderna" : 4,
+            "Oxford/AstraZeneca" : 5,
+            "Sinovac" : 6,
+            "CNBG" : 7
+        }
+        with connection.cursor() as cursor:
+            for index, elem in data:
+                vaccines = elem["vaccines"].split(",")
+                for vaccine in vaccines:
+                    sql = "INSERT INTO CountryVaccine (iso_code, vaccine_id) VALUES (%s, %s)"
+                    print(vaccine)
+                    try:
+                        cursor.execute(sql,(elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
+                    except:
+                        continue
+            connection.commit()
 
 
     def insertIntoVaccinations(self, data, connection):
