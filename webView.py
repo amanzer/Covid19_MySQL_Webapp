@@ -32,7 +32,7 @@ def run_command():
                 if cur:
                     cur.close()
 
-            return render_template('execution.html', data=fetchedData)
+            return render_template('execution.html', data=fetchedData, given_request=sqlQuery)
         else:
             return render_template('index.html')
     else:
