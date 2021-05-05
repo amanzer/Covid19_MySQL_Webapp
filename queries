@@ -4,7 +4,7 @@ SELECT sum(v.vaccinations_done), v.iso_code, c.country
 FROM vaccinations v JOIN Country c on v.iso_code = c.iso_code
 GROUP BY iso_code
 ORDER BY SUM(v.vaccinations_done) DESC
-LIMIT 1;
+LIMIT 1;.
 
 3)
 
