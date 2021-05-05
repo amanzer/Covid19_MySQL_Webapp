@@ -3,7 +3,7 @@ from flask_mysql_connector import MySQL
 
 app = Flask(__name__)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -21,18 +21,18 @@ def run_command():
     if request.method == "POST":
         sqlQuery = request.form['req']
         if sqlQuery != "":
-            #try:
-            cur = mysql.connection.cursor()
-            cur.execute(sqlQuery)
-            fetchedData = cur.fetchall()
-            cur.close()
-            #except:
-            #    return render_template('error.html')
-            #finally:
-            #    if cur:
-            #        cur.close()
+            try:
+                cur = mysql.connection.cursor()
+                cur.execute(sqlQuery)
+                fetchedData = cur.fetchall()
+                cur.close()
+            except:
+                return redirect(url_for('error_handler'))
+            finally:
+                if cur:
+                    cur.close()
 
-            return render_template('execution.html', data=fetchedData)
+            return render_template('execution.html', data=fetchedData, given_request=sqlQuery)
         else:
             return render_template('index.html')
     else:

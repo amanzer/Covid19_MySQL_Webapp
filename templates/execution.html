@@ -2,25 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Data recovered</title>
-    <link rel="stylesheet" href='.static/execution.css'>
+    <title>Résultat</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='execution.css')}}">
 </head>
-<style>
-body {background-color:#ffb8b8;background-repeat:no-repeat;background-position:top left;background-attachment:fixed;}
-h1{font-family:Arial, sans-serif;color:#000000;background-color:#ffffff;}
-p {font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;}
-</style>
+
 <body>
 <div id="wrapper">
-<h1 align="center">Here is the data <br>
-<a href="{{ url_for('index') }}"> Go back to home page</a>
-</h1>
+
+<h1 align="center">Voici les résultats de la requete :</h1>
+
+    <p align="center"><a href="{{ url_for('index') }}"> Accueil</a></p> <br>
+    <p align="center">{{given_request}}</p>
 
 
 
-<table align="center">
+
+<table align="center" id="table_formatting">
 {% for row in data %}
     <tr>
+        <td>
+            {{loop.index}}
+        </td>
          {% for col in row %}
              <td>
                  {{ col }}

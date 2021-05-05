@@ -58,7 +58,7 @@ class DataBase:
     parser: Parser
 
     def __init__(self, data):
-        connection = pymysql.connect(host='localhost', user='root', password='', database='coviddata', \
+        connection = pymysql.connect(host='localhost', user='root', password='password', database='coviddata', \
                                      charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
         self.createAllTables(connection)
 
