@@ -27,7 +27,7 @@ def run_command():
                 fetchedData = cur.fetchall()
                 cur.close()
             except:
-                return render_template('error.html')
+                return redirect(url_for('error_handler'))
             finally:
                 if cur:
                     cur.close()
