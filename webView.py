@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, redirect, abort
 from flask_mysql_connector import MySQL
 
 app = Flask(__name__)
@@ -10,8 +10,13 @@ app.config['DEBUG'] = True
 mysql = MySQL(app)
 
 
-
 @app.route('/')
+@app.route('/index')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/results')
 def code_execution():
     cur = mysql.connection.cursor()
     sqlQuery = "SELECT * FROM country;"
@@ -20,10 +25,6 @@ def code_execution():
     cur.close()
     return render_template('execution.html', data=fetchedData)
 
-#
-# @app.route('/')
-# def hello_world():
-#     return render_template('index.html')
 
 
 if __name__ == '__main__':
