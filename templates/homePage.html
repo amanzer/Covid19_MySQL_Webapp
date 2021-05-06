@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div align="center">
+    {% if userEpi==True %}
+        <p>EPIDEMIOLOGIST EN LIGNE</p> <br>
+    {% endif %}
+</div>
+
+<div align="center">
+    <p>Accéder aux données concernant :</p> <br>
+    <p><a href="{{ url_for('showData', message='0') }}"> Les pays </a></p> <br>
+    <p><a href="{{ url_for('showData', message='1') }}"> Les vaccins disponibles</a></p> <br>
+    <p><a href="{{ url_for('showData', message='2') }}"> Les vaccins qu'utilisent chaque pays</a></p> <br>
+    <p><a href="{{ url_for('showData', message='3') }}"> Les vaccinations </a></p> <br>
+    <p><a href="{{ url_for('showData', message='4') }}"> Les hospitalisations</a></p> <br>
+    <p><a href="{{ url_for('showData', message='5') }}"> Les climats</a></p> <br>
+
+</div>
+
+<div align="center">
+    <p>Requetes pré-enregistrés :</p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 1</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 2</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 3</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 4</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 5</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 6</a></p> <br>
+    <button type="button" onclick="window.location.href='{{ url_for( 'logout') }}';">Déconnexion</button>
+</div>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div id="wrapper">
+
+    <h1 align="center">Voici les résultats de la requete :</h1>
+
+    <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
+
+
+    <table align="center" id="table_formatting">
+        {% for row in data %}
+            <tr>
+                <td>
+                    {{ loop.index }}
+                </td>
+                {% for col in row %}
+                    <td>
+                        {{ col }}
+                    </td>
+                {% endfor %}
+                <td>
+                    <a href="{{ url_for('modifyData') }}">Modifier </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update informations</title>
+</head>
+<body>
+{% if userEpi==True %}
+    <div align="center">
+        <form action="/modifyData" method="post">
+            <p> iso_code:</p>
+            <p><input type="text" name="req"></p>
+            <p> date:</p>
+            <p><input type="text" name="req"></p>
+            <p> icu_patients:</p>
+            <p><input type="text" name="req"></p>
+            <p> hosp_patients:</p>
+            <p><input type="text" name="req"></p>
+            <p><input type="submit" value="Confirmer" ></p>
+        </form>
+    </div>
+{% else %}
+    <div align="center">
+        <p>Vous n'avez pas les droits d'accès à cette page.</p>
+    </div>
+{% endif %}
+
+</body>
+</html>

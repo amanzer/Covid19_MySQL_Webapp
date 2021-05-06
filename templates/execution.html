@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Résultat</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='execution.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 
 <body>
@@ -11,8 +11,7 @@
 
 <h1 align="center">Voici les résultats de la requete :</h1>
 
-    <p align="center"><a href="{{ url_for('index') }}"> Accueil</a></p> <br>
-    <p align="center">{{given_request}}</p>
+    <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
 
 
 
@@ -28,9 +27,6 @@
                  {{ col }}
              </td>
          {% endfor %}
-            <td>
-                <a href="modify" >Modifier </a>
-            </td>
     </tr>
 {% endfor %}
 </table>
