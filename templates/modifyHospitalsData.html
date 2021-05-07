@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <title>Update informations</title>
 </head>
-<body>
+<body style="background-color: #94d6b9;">
 {% if userEpi==True %}
     <div align="center">
         <form action="/modifyData" method="post">
+            <br>
+            <p>Veuillez entrer les nouveaux données :</p>
+            <br>
+            <br>
             <p> iso_code:</p>
             <p><input type="text" name="req"></p>
             <p> date:</p>
@@ -16,6 +20,7 @@
             <p><input type="text" name="req"></p>
             <p> hosp_patients:</p>
             <p><input type="text" name="req"></p>
+            <br>
             <p><input type="submit" value="Confirmer" ></p>
         </form>
     </div>

@@ -5,14 +5,42 @@
     <title>Connexion</title>
       <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
+
+<body style="background-color: #94d6b9;">
+
+
 <body>
 <div align="center">
+    <br>
+    <br>
+    <p>Connectez-vouz :</p> <br>
+    <br>
+    <br>
     <form action="/" method="post">
-    <input type=text" name="username" required />
-    <input type="password" name="password" required />
+        <p>Nom d'utilisateur :</p>
+        <input type=text" name="username" required />
+        <br>
+        <p>Mot de passe :</p>
+        <input type="password" name="password" required />
+        <br>
+        <br>
     <input type="submit" />
-</form>
+    </form>
 
+    <br>
+    <p> {{label}}</p>
+    <br>
+    <p>
+        <a href="{{ url_for('lostPassword')}}">
+            Mot de passe oublié ?
+        </a>
+    </p>
+    <br>
+    <p>
+        <a href="{{ url_for('register')}}">
+            Créer un nouveau compte.
+        </a>
+    </p>
 </div>
 
 

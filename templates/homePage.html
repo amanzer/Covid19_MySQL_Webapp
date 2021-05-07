@@ -5,11 +5,14 @@
     <title>Accueil</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body style="background-color: #94d6b9;">
 
 <div align="center">
     {% if userEpi==True %}
         <p>EPIDEMIOLOGIST EN LIGNE</p> <br>
+
+        <p> <a href="{{ url_for('modifyData') }}"> Ajouter de nouvelles données d'hospitalisations </a></p>
+
     {% endif %}
 </div>
 
@@ -27,11 +30,11 @@
 <div align="center">
     <p>Requetes pré-enregistrés :</p> <br>
     <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 1</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 2</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 3</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 4</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 5</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 6</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='1') }}"> Requete 2</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='2') }}"> Requete 3</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='3') }}"> Requete 4</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='4') }}"> Requete 5</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='5') }}"> Requete 6</a></p> <br>
     <button type="button" onclick="window.location.href='{{ url_for( 'logout') }}';">Déconnexion</button>
 </div>
 

@@ -1,3 +1,6 @@
+1)
+SELECT country.country FROM hospitalsdata JOIN country on hospitalsdata.iso_code=country.iso_code WHERE hosp_patients >= 5000 GROUP BY hospitalsdata.iso_code
+
 2)
 
 SELECT sum(v.vaccinations_done), v.iso_code, c.country

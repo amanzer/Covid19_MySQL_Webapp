@@ -3,7 +3,8 @@ Ce fichier contient les commandes SQL qui vont être lancées par l'application.
 
 """
 
-project_requests = ["SELECT sum(v.vaccinations_done), v.iso_code, c.country \
+project_requests = ["SELECT country.country FROM hospitalsdata JOIN country on hospitalsdata.iso_code=country.iso_code WHERE hosp_patients >= 5000 GROUP BY hospitalsdata.iso_code",
+                    "SELECT sum(v.vaccinations_done), v.iso_code, c.country \
            FROM vaccinations v JOIN Country c on v.iso_code = c.iso_code \
            GROUP BY iso_code \
            ORDER BY SUM(v.vaccinations_done) DESC \
@@ -35,3 +36,8 @@ database_commands = ["SELECT * FROM country",
                      "SELECT * FROM vaccinations",
                      "SELECT * FROM hospitalsdata",
                      "SELECT * FROM climate"]
+
+verifyEpidemiologist = "SELECT EXISTS(SELECT * FROM epidemiologist WHERE epidemiologist.id_person = ?);"
+
+# "SELECT EXISTS (SELECT * FROM person WHERE person.username = ? AND person.password= ?);"
+
