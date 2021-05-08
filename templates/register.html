@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body style="background-color: #94d6b9;">
-<div align="center">
+
+<body class="bodyF">
+
+<div class="center divF" align="center">
     <form action="/register" method="post">
         <br>
         <p>Veuillez entrer vos données (il faut compléter tous les champs):</p>
@@ -33,7 +36,7 @@
         <br>
         <p> {{label}}</p>
         <br>
-         <p align="center"><a href="{{ url_for('home') }}"> Revenir à la page de connexion</a></p> <br>
+        <p align="center"><a href="{{ url_for('home') }}"> Revenir à la page de connexion</a></p> <br>
     </form>
 </div>
 </body>

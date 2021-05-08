@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Connexion</title>
-      <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 
-<body style="background-color: #94d6b9;">
+<body class="bodyF">
 
-
-<body>
-<div align="center">
+<div class="center divF" align="center">
     <br>
     <br>
-    <p>Connectez-vouz :</p> <br>
+    <h1>Connexion</h1> <br>
     <br>
     <br>
     <form action="/" method="post">
         <p>ID d'utilisateur :</p>
-        <input type=text" name="userID" required />
+        <input type=text" name="userID" required/>
         <br>
         <p>Mot de passe :</p>
-        <input type="password" name="password" required />
+        <input type="password" name="password" required/>
         <br>
         <br>
-    <input type="submit" />
+        <input type="submit"/>
     </form>
 
     <br>
@@ -42,7 +40,6 @@
         </a>
     </p>
 </div>
-
 
 </body>
 </html>

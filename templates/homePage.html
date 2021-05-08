@@ -5,19 +5,18 @@
     <title>Accueil</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body style="background-color: #94d6b9;">
 
-<div align="center">
+<body class="bodyF">
+
+<div class="center divF" align="center">
     {% if userEpi==True %}
-        <p>EPIDEMIOLOGIST EN LIGNE</p> <br>
+        <h2>EPIDEMIOLOGIST EN LIGNE</h2> <br>
 
-        <p> <a href="{{ url_for('modifyData') }}"> Ajouter de nouvelles données d'hospitalisations </a></p>
+        <h3> <a href="{{ url_for('modifyData') }}"> Ajouter de nouvelles données d'hospitalisations </a></h3>
 
     {% endif %}
-</div>
 
-<div align="center">
-    <p>Accéder aux données concernant :</p> <br>
+    <h1>Accéder aux données concernant :</h1> <br>
     <p><a href="{{ url_for('showData', message='0') }}"> Les pays </a></p> <br>
     <p><a href="{{ url_for('showData', message='1') }}"> Les vaccins disponibles</a></p> <br>
     <p><a href="{{ url_for('showData', message='2') }}"> Les vaccins qu'utilisent chaque pays</a></p> <br>
@@ -25,21 +24,15 @@
     <p><a href="{{ url_for('showData', message='4') }}"> Les hospitalisations</a></p> <br>
     <p><a href="{{ url_for('showData', message='5') }}"> Les climats</a></p> <br>
 
-</div>
-
-<div align="center">
-    <p>Requetes pré-enregistrés :</p> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Requete 1</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='1') }}"> Requete 2</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='2') }}"> Requete 3</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='3') }}"> Requete 4</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='4') }}"> Requete 5</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='5') }}"> Requete 6</a></p> <br>
+    <h1>Requetes pré-enregistrés :</h1> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Les pays qui ont eu plus de 5000 personnes hospitalisées</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='1') }}"> Le pays qui a administré le plus grand nombre de vaccins</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='2') }}"> Les vaccins avec la liste des pays qui l'utilisent</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='3') }}"> La proportion de la population hospitalisée pour chaque pays le 1er janvier 2021</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='4') }}"> L'évolution pour chaque jour et chaque pays du nombre de patients hospitalisés</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='5') }}"> Les vaccins disponibles à la fois en Belgique et en france.</a></p> <br>
     <button type="button" onclick="window.location.href='{{ url_for( 'logout') }}';">Déconnexion</button>
+
 </div>
-
-
-
-
 </body>
 </html>

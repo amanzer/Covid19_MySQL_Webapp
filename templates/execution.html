@@ -6,30 +6,29 @@
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 
-<body style="background-color: #94d6b9;">
-<div id="wrapper">
+<body class="bodyF">
 
-<h1 align="center">Voici les résultats de la requete :</h1>
+<div class="center divF" align="center">
+
+    <h1 align="center">Voici les résultats de la requete :</h1>
 
     <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
 
 
-
-
-<table align="center" id="table_formatting">
-{% for row in data %}
-    <tr>
-        <td>
-            {{loop.index}}
-        </td>
-         {% for col in row %}
-             <td>
-                 {{ col }}
-             </td>
-         {% endfor %}
-    </tr>
-{% endfor %}
-</table>
+    <table align="center" id="table_formatting">
+        {% for row in data %}
+        <tr>
+            <td width="20px">
+                {{loop.index}}
+            </td>
+            {% for col in row %}
+            <td>
+                {{ col }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
 
 </div>
 </body>

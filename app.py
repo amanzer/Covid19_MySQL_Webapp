@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -50,14 +50,12 @@ def generate_user_id():
     p3 = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     p4 = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     p5 = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
-
-    newId = p1 + "-" + p2 + "-" + p3 + "-" + p4 + "-" + p5
-    return newId
+    return p1 + "-" + p2 + "-" + p3 + "-" + p4 + "-" + p5
 
 
 def createUser(username, first_name, last_name, address, password):
     """
-    Créer un nouvel utilisateur dans la bdd et renvoie le nouvel user ID crée.
+    Créer un nouvel utilisateur dans la bdd et renvoie le nouveau user ID crée.
     """
     newId = generate_user_id()
     insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES ('%s', '%s', '%s', '%s', '%s', '%s');" % (
@@ -88,7 +86,8 @@ def isUserEpidemiologist(userId):
     """
     Vérifie si le compte qui se connecte est un épidemiologiste
     """
-    epidemiologistIdCommand=("SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId)
+    epidemiologistIdCommand = (
+                "SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId)
     res = executeMySqlCommand(epidemiologistIdCommand)
     if res[0][0] == 1:
         return True
@@ -139,7 +138,7 @@ def login():
             epidemiologist = isUserEpidemiologist(given_userID)
             thisUserId = given_userID
             session['user'] = request.form['userID']
-            # session.permanent =True
+            session.permanent =True
             return redirect(url_for('home'))
         else:
             return render_template('login.html', label="Ce compte n'éxiste pas")
@@ -200,6 +199,18 @@ def showData(message):
     if "user" in session:
         sqlCommand = database_commands[message]
         dataList = executeMySqlCommand(sqlCommand)
+        if message == 0:
+            dataList.insert(0, ('Iso_code', "Continent","Région", "Pays", "IDH", "Population", "Superficie", "Climat", "Date de 1ére vac."))
+        elif message ==1:
+            dataList.insert(0, ("id", "Vaccin"))
+        elif message ==2:
+            dataList.insert(0, ("Iso_code", "Id du Vaccin utilisé"))
+        elif message ==3:
+            dataList.insert(0, ("Iso_code", "Date", "Tests effectués", "Vaccionations ceffectuées"))
+        elif message ==4:
+            dataList.insert(0, ("Id", "Iso_code", "Date", "Icu_Patients", "Hosp_patients", "L'ID de l'épidémiologiste"))
+        elif message ==5:
+            dataList.insert(0,("Id", "Description"))
         return render_template('execution.html', data=dataList)
     else:
         return redirect(url_for('login'))
@@ -210,6 +221,19 @@ def showRequest(message):
     if "user" in session:
         sqlCommand = project_requests[message]
         dataList = executeMySqlCommand(sqlCommand)
+
+        if message ==0:
+            dataList.insert(0, ("Pays",))
+        elif message == 1:
+            dataList.insert(0,("Vaccinations", "Iso_code", "Pays", ))
+        elif message == 2:
+            dataList.insert(0,("L'id du vaccin","Le vaccin","La liste des pays qui l'utilise", ))
+        elif message == 3:
+            dataList.insert(0, ("L'iso_code", "La proportion de la population hospitalisée, le 1/01/2021",))
+
+        elif message == 5:
+            dataList.insert(0,("Vaccin", ))
+
         return render_template('execution.html', data=dataList, userEpi=epidemiologist)
     else:
         return redirect(url_for('login'))
