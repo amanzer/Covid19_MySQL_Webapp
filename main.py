@@ -156,8 +156,8 @@ class DataBase:
             sql = "CREATE TABLE IF NOT EXISTS hospitalsData(id INT AUTO_INCREMENT PRIMARY KEY ," \
                   "iso_code varchar(3) NOT NULL," \
                   " date DATE NOT NULL," \
-                  " icu_patients INT(10)  unsigned NOT NULL," \
-                  " hosp_patients INT(10) unsigned NOT NULL, " \
+                  " icu_patients INT(10)  NOT NULL," \
+                  " hosp_patients INT(10)  NOT NULL, " \
                   " source_epidemiologist VARCHAR(40) NOT NULL," \
                   "FOREIGN KEY (iso_code) REFERENCES country(iso_code), " \
                   "FOREIGN KEY (source_epidemiologist) REFERENCES epidemiologist(id_person))"
