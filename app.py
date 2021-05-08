@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -48,12 +48,10 @@ def executeMySqlCommand(query):
 
 
 def isValidAccount(given_username, given_password):
-    str= "SELECT EXISTS (SELECT * FROM person WHERE person.username = {} AND person.password= {});".format(given_username, given_password)
-    try:
-        res =executeMySqlCommand(str)
-    except:
-        return False
-    if res[0][0] ==1 :
+    str= ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s' AND person.password= '%s');" % (given_username, given_password))
+
+    res =executeMySqlCommand(str)
+    if res[0][0] == 1:
         return True
     else:
         return False
@@ -137,7 +135,15 @@ def showRequest(message):
 def modifyData():
     if "user" in session:
         if request.method == "POST":
-            return render_template("homePage.html", userEpi=epidemiologist)
+            iso_code=request.form["iso_code"]
+            date= request.form["date"]
+            icu_patients = request.form["icu_patients"]
+            hosp_patients= request.form["hosp_patients"]
+            if iso_code != "" and date != "" and icu_patients !="" and hosp_patients:
+                print(iso_code +" " + date + " " + icu_patients + " " + hosp_patients)
+                return render_template("homePage.html", userEpi=epidemiologist)
+            else:
+                return render_template("modifyHospitalsData.html", userEpi=epidemiologist, label="Il faut compléter tous les champs")
         else:
             return render_template("modifyHospitalsData.html", userEpi=epidemiologist)
     else:

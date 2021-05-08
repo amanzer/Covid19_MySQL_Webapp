@@ -30,7 +30,6 @@ class Parser:
         frame = frame.replace({np.NAN: None})
         return frame.iterrows()
 
-
     def get_hospitals_data(self):
         frame = pd.read_csv(self.hospitals, sep=",")
         frame = frame.replace({np.NAN: None})
@@ -38,20 +37,19 @@ class Parser:
 
     def get_person_and_epidemiologist_data(self):
         frame = pd.read_csv(self.hospitals, sep=',')
-        newFrame= frame["source_epidemiologiste"]
+        newFrame = frame["source_epidemiologiste"]
         newFrame = newFrame.drop_duplicates()
         return newFrame
 
     def get_producers_data(self):
-         frame = pd.read_csv(self.producers, sep=";")
-         frame.fillna('')
-         return frame.iterrows()
+        frame = pd.read_csv(self.producers, sep=";")
+        frame.fillna('')
+        return frame.iterrows()
 
     def get_vaccinations_data(self):
         vaccinations = pd.read_csv(self.vaccinations, sep=",")
         vaccinations = vaccinations.replace({np.NAN: None})
         return vaccinations.iterrows()
-
 
 
 class DataBase:
@@ -65,7 +63,6 @@ class DataBase:
         self.parser = Parser(data)
         self.insertIntoTables(connection)
 
-
     def createAllTables(self, connection):
         self.createClimateTable(connection)
         self.createCountryTable(connection)
@@ -75,6 +72,8 @@ class DataBase:
         self.createPersonTable(connection)
         self.createEpidemiologistTable(connection)
         self.createHospitalsTable(connection)
+        print("Tables creation completed")
+
 
     def insertIntoTables(self, connection):
         self.insertIntoClimate(self.parser.get_climate_data(), connection)
@@ -83,8 +82,9 @@ class DataBase:
         self.insertIntoVaccineCountry(self.parser.get_producers_data(), connection)
         self.insertIntoPersonAndEpidemiologist(self.parser.get_person_and_epidemiologist_data(), connection)
         self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
-        self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)  # Ne fonctionne pas erreur :
-        # IntegrityError: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`coviddata`.`vaccinations`, CONSTRAINT `vaccinations_ibfk_1` FOREIGN KEY (`iso_code`) REFERENCES `country` (`iso_code`))')
+        self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)
+        print("Data inserted into tables.")
+
 
     def createClimateTable(self, connection):
         with connection.cursor() as cursor:
@@ -92,8 +92,6 @@ class DataBase:
                   "id INT(2) unsigned primary key," \
                   "description TEXT not null )"
             cursor.execute(sql)
-
-
 
     def createCountryTable(self, connection):
         with connection.cursor() as cursor:
@@ -108,7 +106,6 @@ class DataBase:
                   "date_first_vacciantion DATETIME," \
                   "FOREIGN KEY(climate) REFERENCES climate(id)) "
             cursor.execute(sql)
-
 
     def createVaccineTable(self, connection):
         with connection.cursor() as cursor:
@@ -135,7 +132,6 @@ class DataBase:
                   "PRIMARY KEY(iso_code, date)," \
                   "FOREIGN KEY (iso_code) REFERENCES country(iso_code))"
             cursor.execute(sql)
-
 
     def createPersonTable(self, connection):
         with connection.cursor() as cursor:
@@ -167,7 +163,6 @@ class DataBase:
                   "FOREIGN KEY (source_epidemiologist) REFERENCES epidemiologist(id_person))"
             cursor.execute(sql)
 
-
     def insertIntoClimate(self, data, connection):
         for index, elem in data:
             id, description = elem["id"], elem["decription"]
@@ -176,7 +171,6 @@ class DataBase:
                 sql = "INSERT INTO climate (id, description) VALUES (%s, %s)"
                 cursor.execute(sql, (id, description))
             connection.commit()
-
 
     def insertIntoCountry(self, data, connection):
         for index, elem in data:
@@ -207,7 +201,7 @@ class DataBase:
     def insertIntoVaccine(self, connection):
         vaccines = ["Pfizer/BioNTech", "Sinopharm", "Sputnik V", "Moderna", "Oxford/AstraZeneca", "Sinovac", "CNBG"]
 
-        for vaccin in vaccines :
+        for vaccin in vaccines:
             with connection.cursor() as cursor:
                 sql = "INSERT INTO vaccine (name) VALUES (%s)"
                 cursor.execute(sql, (vaccin))
@@ -215,13 +209,13 @@ class DataBase:
 
     def insertIntoVaccineCountry(self, data, connection):
         switcher = {
-            "Pfizer/BioNTech" : 1,
-            "Sinopharm" : 2,
-            "Sputnik V" : 3 ,
-            "Moderna" : 4,
-            "Oxford/AstraZeneca" : 5,
-            "Sinovac" : 6,
-            "CNBG" : 7
+            "Pfizer/BioNTech": 1,
+            "Sinopharm": 2,
+            "Sputnik V": 3,
+            "Moderna": 4,
+            "Oxford/AstraZeneca": 5,
+            "Sinovac": 6,
+            "CNBG": 7
         }
         with connection.cursor() as cursor:
             for index, elem in data:
@@ -229,11 +223,10 @@ class DataBase:
                 for vaccine in vaccines:
                     sql = "INSERT INTO CountryVaccine (iso_code, vaccine_id) VALUES (%s, %s)"
                     try:
-                        cursor.execute(sql,(elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
+                        cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
                     except:
                         continue
             connection.commit()
-
 
     def insertIntoVaccinations(self, data, connection):
         for index, elem in data:
@@ -263,7 +256,6 @@ class DataBase:
             source_epidemiologist = elem["source_epidemiologiste"]
 
             with connection.cursor() as cursor:
-
                 sql = "INSERT INTO hospitalsdata (iso_code, \
                    date, \
                    icu_patients, \
@@ -273,18 +265,17 @@ class DataBase:
 
             connection.commit()
 
-
     def insertIntoPersonAndEpidemiologist(self, data, connection):
         for elem in data:
             id = elem
-            first_name = "first_name"
-            last_name = "last_name"
-            username = "username"
-            address = "address"
-            password = "password"
+            first_name = ""
+            last_name = ""
+            username = ""
+            address = ""
+            password = ""
 
-            center = "center"
-            service_phone = "service_phone"
+            center = ""
+            service_phone = ""
 
             with connection.cursor() as cursor:
                 sql = "INSERT INTO person (id, \
@@ -295,12 +286,13 @@ class DataBase:
                    password) VALUES (%s, %s, %s, %s, %s, %s)"
                 cursor.execute(sql, (id, first_name, last_name, username, address, password))
 
-                sql2="INSERT INTO epidemiologist (id_person," \
-                     " center," \
-                     " service_phone)" \
-                     " VALUES (%s,%s,%s)"
-                cursor.execute(sql2,(id, center, service_phone))
+                sql2 = "INSERT INTO epidemiologist (id_person," \
+                       " center," \
+                       " service_phone)" \
+                       " VALUES (%s,%s,%s)"
+                cursor.execute(sql2, (id, center, service_phone))
             connection.commit()
+
 
 if __name__ == '__main__':
     files_to_parse = "zip"  # sys.argv[1]
@@ -308,6 +300,5 @@ if __name__ == '__main__':
     db = DataBase(files_to_parse)
     # db.get_country_data()
 
-    #testParser = Parser(files_to_parse)
-    #testParser.get_hospitals_data()
-
+    # testParser = Parser(files_to_parse)
+    # testParser.get_hospitals_data()

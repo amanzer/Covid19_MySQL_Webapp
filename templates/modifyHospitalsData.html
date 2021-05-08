@@ -6,28 +6,36 @@
 </head>
 <body style="background-color: #94d6b9;">
 {% if userEpi==True %}
-    <div align="center">
-        <form action="/modifyData" method="post">
-            <br>
-            <p>Veuillez entrer les nouveaux données :</p>
-            <br>
-            <br>
-            <p> iso_code:</p>
-            <p><input type="text" name="req"></p>
-            <p> date:</p>
-            <p><input type="text" name="req"></p>
-            <p> icu_patients:</p>
-            <p><input type="text" name="req"></p>
-            <p> hosp_patients:</p>
-            <p><input type="text" name="req"></p>
-            <br>
-            <p><input type="submit" value="Confirmer" ></p>
-        </form>
-    </div>
+<div align="center">
+    <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
+    <br>
+    <br>
+
+    <form action="/modifyData" method="post">
+        <br>
+        <p>Veuillez entrer les nouveaux données :</p>
+        <br>
+        <br>
+        <p> iso_code:</p>
+        <p><input type="text" name="iso_code"></p>
+        <p> date:</p>
+        <p><input type="text" name="date"></p>
+        <p> icu_patients:</p>
+        <p><input type="text" name="icu_patients"></p>
+        <p> hosp_patients:</p>
+        <p><input type="text" name="hosp_patients"></p>
+        <br>
+        <p><input type="submit" value="Confirmer"></p>
+
+        <br>
+        <p> {{label}}</p>
+        <br>
+    </form>
+</div>
 {% else %}
-    <div align="center">
-        <p>Vous n'avez pas les droits d'accès à cette page.</p>
-    </div>
+<div align="center">
+    <p>Vous n'avez pas les droits d'accès à cette page.</p>
+</div>
 {% endif %}
 
 </body>
