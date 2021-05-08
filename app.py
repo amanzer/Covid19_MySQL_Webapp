@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -31,7 +31,7 @@ thisUserId = ""  # Stock l'ID de l'utilisateur connecté
 
 def executeMySqlCommand(query):
     """
-    exécute la query sql
+    exécute la query sql et renvoie les données obtenu.
     """
     cur = mysql.connection.cursor()
     cur.execute(query)
@@ -58,10 +58,10 @@ def createUser(username, first_name, last_name, address, password):
     Créer un nouvel utilisateur dans la bdd et renvoie le nouveau user ID crée.
     """
     newId = generate_user_id()
-    insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES ('%s', '%s', '%s', '%s', '%s', '%s');" % (
-        newId, first_name, last_name, username, address, password)
-    cur = mysql.connection.cursor()
-    cur.execute(insertCommand)
+    insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES (?, ?, ?, ?, ?, ?);"
+    user_args = (newId, first_name, last_name, username, address, password)
+    cur = mysql.connection.cursor(prepared=True)
+    cur.execute(insertCommand, user_args)
     cur.execute("COMMIT;")
     cur.close()
     print(insertCommand)
@@ -74,7 +74,6 @@ def accountExists(given_userID, given_password):
     """
     isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.id = '%s' AND person.password= '%s');" % (
         given_userID, given_password))
-
     res = executeMySqlCommand(isUserValidCommand)
     if res[0][0] == 1:
         return True
@@ -87,7 +86,7 @@ def isUserEpidemiologist(userId):
     Vérifie si le compte qui se connecte est un épidemiologiste
     """
     epidemiologistIdCommand = (
-                "SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId)
+            "SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId)
     res = executeMySqlCommand(epidemiologistIdCommand)
     if res[0][0] == 1:
         return True
@@ -98,15 +97,23 @@ def isUserEpidemiologist(userId):
 def addNewDataToHospitals(iso_code, date, icu_patients, hosp_patients):
     """
     Ajoute les données dans la table hospitalsdata
-
-    TODO: Si iso_code n'éxiste pas lance une erreur de fk
     """
-    userId = thisUserId
-    insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES ('%s', '%s', '%s', '%s', '%s');" % (
-        iso_code, date, icu_patients, hosp_patients, userId)
     cur = mysql.connection.cursor()
-    cur.execute(insertCommand)
-    cur.execute("COMMIT;")
+    userId = thisUserId
+    sqlCountryExists = "SELECT EXISTS (SELECT * FROM country WHERE country.iso_code = '%s');" % iso_code
+
+    res = executeMySqlCommand(sqlCountryExists)
+    ttuple = (iso_code, date, icu_patients, hosp_patients, userId)
+    if res[0][0] == 1:
+        insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES (?, ?, ?, ?, ?);"
+        cur.execute(insertCommand, ttuple)
+        cur.execute("COMMIT;")
+    else:
+        sqlInsertCountry = "INSERT INTO country(iso_code) VALUES(?)"
+        cur.execute(sqlInsertCountry, iso_code)
+        insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES (?, ?, ?, ?, ?);"
+        cur.execute(insertCommand, ttuple)
+        cur.execute("COMMIT;")
     cur.close()
     print(insertCommand)
 
@@ -138,7 +145,7 @@ def login():
             epidemiologist = isUserEpidemiologist(given_userID)
             thisUserId = given_userID
             session['user'] = request.form['userID']
-            session.permanent =True
+            session.permanent = True
             return redirect(url_for('home'))
         else:
             return render_template('login.html', label="Ce compte n'éxiste pas")
@@ -200,17 +207,18 @@ def showData(message):
         sqlCommand = database_commands[message]
         dataList = executeMySqlCommand(sqlCommand)
         if message == 0:
-            dataList.insert(0, ('Iso_code', "Continent","Région", "Pays", "IDH", "Population", "Superficie", "Climat", "Date de 1ére vac."))
-        elif message ==1:
+            dataList.insert(0, ('Iso_code', "Continent", "Région", "Pays", "IDH", "Population", "Superficie", "Climat",
+                                "Date de 1ére vac."))
+        elif message == 1:
             dataList.insert(0, ("id", "Vaccin"))
-        elif message ==2:
+        elif message == 2:
             dataList.insert(0, ("Iso_code", "Id du Vaccin utilisé"))
-        elif message ==3:
+        elif message == 3:
             dataList.insert(0, ("Iso_code", "Date", "Tests effectués", "Vaccionations ceffectuées"))
-        elif message ==4:
+        elif message == 4:
             dataList.insert(0, ("Id", "Iso_code", "Date", "Icu_Patients", "Hosp_patients", "L'ID de l'épidémiologiste"))
-        elif message ==5:
-            dataList.insert(0,("Id", "Description"))
+        elif message == 5:
+            dataList.insert(0, ("Id", "Description"))
         return render_template('execution.html', data=dataList)
     else:
         return redirect(url_for('login'))
@@ -221,20 +229,27 @@ def showRequest(message):
     if "user" in session:
         sqlCommand = project_requests[message]
         dataList = executeMySqlCommand(sqlCommand)
-
-        if message ==0:
+        messageToDisplay = ""
+        if message == 0:
             dataList.insert(0, ("Pays",))
+            messageToDisplay = "Les pays qui ont eu plus de 5000 personnes hospitalisées"
         elif message == 1:
-            dataList.insert(0,("Vaccinations", "Iso_code", "Pays", ))
+            dataList.insert(0, ("Vaccinations", "Iso_code", "Pays",))
+            messageToDisplay = "Le pays qui a administré le plus grand nombre de vaccins"
         elif message == 2:
-            dataList.insert(0,("L'id du vaccin","Le vaccin","La liste des pays qui l'utilise", ))
+            dataList.insert(0, ("L'id du vaccin", "Le vaccin", "La liste des pays qui l'utilise",))
+            messageToDisplay = "Les vaccins avec la liste des pays qui l'utilisent"
         elif message == 3:
             dataList.insert(0, ("L'iso_code", "La proportion de la population hospitalisée, le 1/01/2021",))
-
+            messageToDisplay = "La proportion de la population hospitalisée pour chaque pays le 1er janvier 2021"
+        elif message == 4:
+            dataList.insert(0, ("l'Iso_coode", "Date", "hospitalisations", "hospitalisattions"))
+            messageToDisplay = "L'évolution pour chaque jour et chaque pays du nombre de patients hospitalisés"
         elif message == 5:
-            dataList.insert(0,("Vaccin", ))
+            dataList.insert(0, ("Vaccin", "Id du vaccin"))
+            messageToDisplay = "Les vaccins disponibles à la fois en Belgique et en france."
 
-        return render_template('execution.html', data=dataList, userEpi=epidemiologist)
+        return render_template('execution.html', data=dataList, userEpi=epidemiologist, label=messageToDisplay)
     else:
         return redirect(url_for('login'))
 
@@ -249,7 +264,8 @@ def modifyData():
             hosp_patients = request.form["hosp_patients"]
             if iso_code != "" and date != "" and icu_patients != "" and hosp_patients:
                 addNewDataToHospitals(iso_code, date, icu_patients, hosp_patients)
-                return render_template("homePage.html", userEpi=epidemiologist)
+                return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
+                                       label="Les données ont été insérer dans la base de données")
             else:
                 return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
                                        label="Il faut compléter tous les champs")

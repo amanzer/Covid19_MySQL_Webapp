@@ -1,39 +1,57 @@
-
-
-
 #table_formatting {
     font-family: Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 70%;
 }
+
 #table_formatting td, #table_formatting th {
-    border : 1px solid #000000;
-    padding:5px;
+    border: 1px solid #000000;
+    padding: 5px;
 }
 
-#table_formatting td:first-child{background-color: darkcyan}
-#table_formatting tr:nth-child(even){background-color: #ffffff;}
-#table_formatting tr:nth-child(odd){background-color: #ADD8E6FF;}
-#table_formatting tr:first-child{background-color: darkcyan}
-#table_formatting tr:hover {background-color: #ddd;}
+/*#table_formatting td:first-child{background-color: #383e56}*/
+#table_formatting tr:nth-child(even) {
+    background-color: #c5d7bd;
+}
+
+#table_formatting tr:nth-child(odd) {
+    background-color: #9fb8ad;
+}
+
+#table_formatting tr:first-child {
+    background-color: #545d84
+}
+
+#table_formatting tr:hover {
+    background-color: #fb743e;
+}
+
 .center {
-margin: auto;
-width: 60%;
-border: 5px solid #FFFF00;
-padding: 10px;
+    margin: auto;
+    width: 60%;
+    border: 5px solid #FFFF00;
+    padding: 10px;
 }
 
 .bodyF {
-    background-image: url("../static/oriental-tiles.png");
+    background-image: url("../static/webb-dark.png");
     background-color: darkcyan;
 }
+
 .divF {
     border-radius: 25px;
-    border: 5px solid #ffffff;
+    border: 5px solid #000000;
     background-color: #eeeeee;
-    width: 70%;
-    margin-top: 10%;
-    margin-bottom: 10%;
+    background-image: url("../static/dot-grid.png");
+    width: 80%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+p {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: medium;
+    font-style: normal;
 }
 
 #pF {
@@ -45,7 +63,8 @@ padding: 10px;
 
 #h1F {
     text-align: center;
-    font-family:Arial, sans-serif;
-    color:#000000;
-    background-color:#ffffff;
+    font-family: Arial, sans-serif;
+    color: #000000;
+    background-color: #ffffff;
 }
+

@@ -12,13 +12,10 @@
 {% if userEpi==True %}
 
 <div class="center divF" align="center">
-    <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
-    <br>
-    <br>
 
     <form action="/modifyData" method="post">
         <br>
-        <p>Veuillez entrer les nouveaux données :</p>
+        <h2>Veuillez entrer les nouveaux données :</h2>
         <br>
         <br>
         <p> iso_code:</p>
@@ -35,6 +32,7 @@
         <br>
         <p> {{label}}</p>
         <br>
+        <p align="center"><a href="{{ url_for('home') }}"> Revenir à la page d'accueil</a></p> <br>
     </form>
 </div>
 {% else %}

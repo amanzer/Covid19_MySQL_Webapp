@@ -12,17 +12,19 @@
 
     <h1 align="center">Voici les résultats de la requete :</h1>
 
-    <p align="center"><a href="{{ url_for('home') }}"> Accueil</a></p> <br>
+    <p align="center"><a href="{{ url_for('home') }}">Revenir à la page d'accueil</a></p> <br>
 
+    <h3> {{label}}</h3>
+    <br>
 
     <table align="center" id="table_formatting">
         {% for row in data %}
         <tr>
-            <td width="20px">
-                {{loop.index}}
-            </td>
+            <!--            <td width="20px">-->
+            <!--                {{loop.index}}-->
+            <!--            </td>-->
             {% for col in row %}
-            <td>
+            <td style="text-align: center">
                 {{ col }}
             </td>
             {% endfor %}

@@ -96,12 +96,12 @@ class DataBase:
     def createCountryTable(self, connection):
         with connection.cursor() as cursor:
             sql = "CREATE TABLE IF NOT EXISTS country (iso_code varchar(3) PRIMARY KEY," \
-                  "continent varchar(20) NOT NULL," \
-                  "region varchar(50) NOT NULL," \
-                  "country varchar(50) NOT NULL," \
-                  "hdi double NOT NULL," \
-                  "population int(11) unsigned NOT NULL," \
-                  "area_sq_ml int(11) unsigned NOT NULL," \
+                  "continent varchar(20) ," \
+                  "region varchar(50) ," \
+                  "country varchar(50) ," \
+                  "hdi double ," \
+                  "population int(11) unsigned ," \
+                  "area_sq_ml int(11) unsigned ," \
                   "climate int(2) unsigned," \
                   "date_first_vacciantion DATETIME," \
                   "FOREIGN KEY(climate) REFERENCES climate(id)) "
@@ -225,7 +225,10 @@ class DataBase:
                     try:
                         cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
                     except:
-                        continue
+                        sqlCreateCountry = "INSERT INTO country(iso_code) VALUES (%s)"
+                        cursor.execute(sqlCreateCountry, elem["iso_code"])
+                        cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
+
             connection.commit()
 
     def insertIntoVaccinations(self, data, connection):
