@@ -8,19 +8,32 @@
 <div align="center">
     <form action="/register" method="post">
         <br>
-        <p>Veuillez entrer vos données :</p>
+        <p>Veuillez entrer vos données (il faut compléter tous les champs):</p>
         <br>
         <br>
         <p> Nom d'utilisateur:</p>
-        <p><input type="text" name="req"></p>
-        <p> Mot de pass:</p>
-        <p><input type="text" name="req"></p>
-        <p> Confirmer le mot de pass:</p>
-        <p><input type="text" name="req"></p>
-        <p> L'adresse email:</p>
-        <p><input type="text" name="req"></p>
+        <p><input type="text" name="username"></p>
+        <p> Le prénom:</p>
+        <p><input type="text" name="first_name"></p>
         <br>
+        <p> Le nom de famille:</p>
+        <p><input type="text" name="last_name"></p>
+        <br>
+        <p> L'adresse:</p>
+        <p><input type="text" name="address"></p>
+        <br>
+        <p> Mot de pass:</p>
+        <p><input type="text" name="password"></p>
+        <br>
+        <p> Confirmer le mot de pass:</p>
+        <p><input type="text" name="confirm_password"></p>
+
         <p><input type="submit" value="Confirmer"></p>
+
+        <br>
+        <p> {{label}}</p>
+        <br>
+         <p align="center"><a href="{{ url_for('home') }}"> Revenir à la page de connexion</a></p> <br>
     </form>
 </div>
 </body>
