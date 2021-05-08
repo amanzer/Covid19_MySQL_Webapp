@@ -71,7 +71,11 @@ def createUser(username, first_name, last_name, address, password):
     newId = generate_user_id()
     insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES ('%s', '%s', '%s', '%s', '%s', '%s');" % (
     newId, first_name, last_name, username, address, password)
-    executeMySqlCommand(insertCommand)
+    cur = mysql.connection.cursor()
+    cur.execute(insertCommand)
+    cur.execute("COMMIT;")
+    cur.close()
+    print(insertCommand)
     return newId
 
 
