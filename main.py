@@ -56,7 +56,7 @@ class DataBase:
     parser: Parser
 
     def __init__(self, data):
-        connection = pymysql.connect(host='localhost', user='root', password='password', database='coviddata', \
+        connection = pymysql.connect(host='localhost', user='root', password='', database='coviddata', \
                                      charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
         self.createAllTables(connection)
 
@@ -84,6 +84,7 @@ class DataBase:
         self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
         self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)
         print("Data inserted into tables.")
+        self.insertDevUser( connection)
 
 
     def createClimateTable(self, connection):
@@ -136,18 +137,18 @@ class DataBase:
     def createPersonTable(self, connection):
         with connection.cursor() as cursor:
             sql = "CREATE TABLE IF NOT EXISTS person(id VARCHAR(40) PRIMARY KEY , " \
-                  "first_name VARCHAR(20) NOT NULL, " \
-                  "last_name VARCHAR(20) NOT NULL," \
-                  "username VARCHAR(20) NOT NULL," \
-                  "address TEXT NOT NULL," \
-                  "password VARCHAR(20) NOT NULL)"
+                  "first_name VARCHAR(20) , " \
+                  "last_name VARCHAR(20)," \
+                  "username VARCHAR(20) ," \
+                  "address TEXT ," \
+                  "password VARCHAR(20) )"
             cursor.execute(sql)
 
     def createEpidemiologistTable(self, connection):
         with connection.cursor() as cursor:
             sql = "CREATE TABLE IF NOT EXISTS epidemiologist(id_person VARCHAR(40) PRIMARY KEY," \
-                  "center VARCHAR(50) NOT NULL," \
-                  "service_phone VARCHAR(20) NOT NULL," \
+                  "center VARCHAR(50) ," \
+                  "service_phone VARCHAR(20) ," \
                   "FOREIGN KEY (id_person) REFERENCES person(id))"
             cursor.execute(sql)
 
@@ -225,9 +226,8 @@ class DataBase:
                     try:
                         cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
                     except:
-                        sqlCreateCountry = "INSERT INTO country(iso_code) VALUES (%s)"
-                        cursor.execute(sqlCreateCountry, elem["iso_code"])
-                        cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
+                        # TODO: trouvez un moyen d'ajouter les pays non incluts dans country (facultatif les gars franchement on s'en fou)
+                        continue
 
             connection.commit()
 
@@ -271,14 +271,14 @@ class DataBase:
     def insertIntoPersonAndEpidemiologist(self, data, connection):
         for elem in data:
             id = elem
-            first_name = ""
-            last_name = ""
-            username = ""
-            address = ""
-            password = ""
+            first_name = None
+            last_name = None
+            username = None
+            address = None
+            password = None
 
-            center = ""
-            service_phone = ""
+            center = None
+            service_phone = None
 
             with connection.cursor() as cursor:
                 sql = "INSERT INTO person (id, \
@@ -296,12 +296,44 @@ class DataBase:
                 cursor.execute(sql2, (id, center, service_phone))
             connection.commit()
 
+    def insertDevUser(self, connection):
+
+        id = "dev_epidemiologist"
+        id_lambda= "lambda"
+        first_name = "mohamed"
+        last_name = ""
+        username = "mohamed"
+        address = ""
+        password = "password"
+        center = ""
+        service_phone = ""
+
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO person (id, \
+               first_name, \
+               last_name, \
+               username, \
+               address, \
+               password) VALUES (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (id, first_name, last_name, username, address, password))
+
+            sql2 = "INSERT INTO epidemiologist (id_person," \
+                   " center," \
+                   " service_phone)" \
+                   " VALUES (%s,%s,%s)"
+            cursor.execute(sql2, (id, center, service_phone))
+            sql3 = "INSERT INTO person (id, \
+               first_name, \
+               last_name, \
+               username, \
+               address, \
+               password) VALUES (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql3, (id_lambda, first_name, last_name, username, address, password))
+        connection.commit()
+
 
 if __name__ == '__main__':
     files_to_parse = "zip"  # sys.argv[1]
 
     db = DataBase(files_to_parse)
-    # db.get_country_data()
 
-    # testParser = Parser(files_to_parse)
-    # testParser.get_hospitals_data()
