@@ -1,9 +1,9 @@
 """
-Utilisateurs devs :
-épidémiologist : id: 0e61cae8-546f-404f-a33a-7069127118c5 password : testing
-utilisateur normal : id:usdd password : usdd
+COVIDATA - 13/05/2021
 
+Authors : Ali, Elias, Ossama
 
+Web application for viewing Covid-19 related data.
 """
 
 from flask import Flask, render_template, url_for, redirect, request, session
@@ -13,13 +13,14 @@ import random
 from flask_mysql_connector import MySQL
 from sql_commands import project_requests, database_commands
 from datetime import timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Paramètres de Flask
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -59,7 +60,7 @@ def createUser(username, first_name, last_name, address, password):
     """
     newId = generate_user_id()
     insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES (?, ?, ?, ?, ?, ?);"
-    user_args = (newId, first_name, last_name, username, address, password)
+    user_args = (newId, first_name, last_name, username, address, generate_password_hash(password))
     cur = mysql.connection.cursor(prepared=True)
     cur.execute(insertCommand, user_args)
     cur.execute("COMMIT;")
@@ -72,11 +73,13 @@ def accountExists(given_username, given_password):
     """
     Vérifie si le compte existe dans la bdd.
     """
-    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s' AND person.password= '%s');" % (
-        given_username, given_password))
+    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s');" % (
+        given_username))
     res = executeMySqlCommand(isUserValidCommand)
     if res[0][0] == 1:
-        return True
+        getPassword = ("SELECT person.password FROM person WHERE person.username = '%s';" % given_username)
+        hashedPass = executeMySqlCommand(getPassword)
+        return check_password_hash(hashedPass[0][0], given_password)
     else:
         return False
 
@@ -85,7 +88,7 @@ def isUserEpidemiologist(username):
     """
     Vérifie si le compte qui se connecte est un épidemiologiste
     """
-    getUserIdCommand=("SELECT person.id FROM person WHERE person.username = '%s';" % (
+    getUserIdCommand = ("SELECT person.id FROM person WHERE person.username = '%s';" % (
         username))
     userId = executeMySqlCommand(getUserIdCommand)
     epidemiologistIdCommand = (
@@ -143,7 +146,6 @@ def login():
         session.pop('user', None)
         given_username = request.form['username']
         given_password = request.form['password']
-
         if accountExists(given_username, given_password) and given_password != "" and given_username != "":
             global epidemiologist, thisUserId
             epidemiologist = isUserEpidemiologist(given_username)
@@ -198,7 +200,7 @@ def lostPassword():
 @app.route('/homePage')
 def home():
     if "user" in session:
-        return render_template("homePage.html", userEpi=epidemiologist)
+        return render_template("homePage.html", userEpi=epidemiologist, username=session["user"])
     else:
         return redirect(url_for('login'))
 

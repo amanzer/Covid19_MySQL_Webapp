@@ -56,7 +56,7 @@ class DataBase:
     parser: Parser
 
     def __init__(self, data):
-        connection = pymysql.connect(host='localhost', user='root', password='password', database='coviddata', \
+        connection = pymysql.connect(host='localhost', user='root', password='', database='coviddata', \
                                      charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
         self.createAllTables(connection)
 
@@ -141,7 +141,7 @@ class DataBase:
                   "last_name VARCHAR(20)," \
                   "username VARCHAR(20) unique," \
                   "address TEXT ," \
-                  "password VARCHAR(20) )"
+                  "password VARCHAR(100) )"
             cursor.execute(sql)
 
     def createEpidemiologistTable(self, connection):
@@ -305,7 +305,7 @@ class DataBase:
         username = "mohamed"
         username2 = "ali"
         address = ""
-        password = "password"
+        password = "pbkdf2:sha256:150000$Zd5n1R4i$657966d066a7d992d8b1ad7c480c151242e03667be654b4c6855029676c70df2"
         center = ""
         service_phone = ""
 
