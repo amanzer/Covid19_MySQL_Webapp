@@ -2,21 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Accueil</title>
+    <title>COVIDATA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body class="bodyF">
 
 <div class="center divF" align="center">
-    {% if userEpi==True %}
-        <h2>ÉPIDÉMIOLOGISTE EN LIGNE</h2> <br>
+    <div style="background-color: #e0e0e0">
+        <h1>COVIDATA</h1>
+        <h3>Application web pour consulter les données liés au Covid-19. </h3>
+    </div>
 
-        <h3> <a href="{{ url_for('modifyData') }}"> Ajouter de nouvelles données d'hospitalisations </a></h3>
+
+    {% if userEpi==True %}
+    <h2 style="background-color: #48ff37; width: fit-content">ÉPIDÉMIOLOGISTE EN LIGNE</h2> <br>
+
+    <h3><a href="{{ url_for('modifyData') }}"> Ajouter de nouvelles données d'hospitalisations </a></h3>
 
     {% endif %}
 
-    <h1>Accéder aux données concernant :</h1> <br>
+    <h2>Accéder aux données concernant :</h2> <br>
     <p><a href="{{ url_for('showData', message='0') }}"> Les pays </a></p> <br>
     <p><a href="{{ url_for('showData', message='1') }}"> Les vaccins disponibles</a></p> <br>
     <p><a href="{{ url_for('showData', message='2') }}"> Les vaccins qu'utilisent chaque pays</a></p> <br>
@@ -24,15 +30,26 @@
     <p><a href="{{ url_for('showData', message='4') }}"> Les hospitalisations</a></p> <br>
     <p><a href="{{ url_for('showData', message='5') }}"> Les climats</a></p> <br>
 
-    <h1>Requetes pré-enregistrés :</h1> <br>
-    <p><a href="{{ url_for('showRequest', message='0') }}"> Les pays qui ont eu plus de 5000 personnes hospitalisées</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='1') }}"> Le pays qui a administré le plus grand nombre de vaccins</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='2') }}"> Les vaccins avec la liste des pays qui l'utilisent</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='3') }}"> La proportion de la population hospitalisée pour chaque pays le 1er janvier 2021</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='4') }}"> L'évolution pour chaque jour et chaque pays du nombre de patients hospitalisés</a></p> <br>
-    <p><a href="{{ url_for('showRequest', message='5') }}"> Les vaccins disponibles à la fois en Belgique et en france.</a></p> <br>
+    <h2>Requetes pré-enregistrés :</h2> <br>
+    <p><a href="{{ url_for('showRequest', message='0') }}"> Les pays qui ont eu plus de 5000 personnes hospitalisées</a>
+    </p> <br>
+    <p><a href="{{ url_for('showRequest', message='1') }}"> Le pays qui a administré le plus grand nombre de vaccins</a>
+    </p> <br>
+    <p><a href="{{ url_for('showRequest', message='2') }}"> Les vaccins avec la liste des pays qui l'utilisent</a></p>
+    <br>
+    <p><a href="{{ url_for('showRequest', message='3') }}"> La proportion de la population hospitalisée pour chaque pays
+        le 1er janvier 2021</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='4') }}"> L'évolution pour chaque jour et chaque pays du nombre de
+        patients hospitalisés</a></p> <br>
+    <p><a href="{{ url_for('showRequest', message='5') }}"> Les vaccins disponibles à la fois en Belgique et en
+        france.</a></p> <br>
     <button type="button" onclick="window.location.href='{{ url_for( 'logout') }}';">Déconnexion</button>
 
+
+    <div style="background-color: #e0e0e0">
+        <h5> Projet réalisé dans le cadre du cours H303-Base de données</h5>
+        <h5> Contact : Numéro de tél | Email | Réseaux sociaux </h5>
+    </div>
 </div>
 </body>
 </html>

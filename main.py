@@ -56,7 +56,7 @@ class DataBase:
     parser: Parser
 
     def __init__(self, data):
-        connection = pymysql.connect(host='localhost', user='root', password='', database='coviddata', \
+        connection = pymysql.connect(host='localhost', user='root', password='password', database='coviddata', \
                                      charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
         self.createAllTables(connection)
 
@@ -139,7 +139,7 @@ class DataBase:
             sql = "CREATE TABLE IF NOT EXISTS person(id VARCHAR(40) PRIMARY KEY , " \
                   "first_name VARCHAR(20) , " \
                   "last_name VARCHAR(20)," \
-                  "username VARCHAR(20) ," \
+                  "username VARCHAR(20) unique," \
                   "address TEXT ," \
                   "password VARCHAR(20) )"
             cursor.execute(sql)
@@ -303,6 +303,7 @@ class DataBase:
         first_name = "mohamed"
         last_name = ""
         username = "mohamed"
+        username2 = "ali"
         address = ""
         password = "password"
         center = ""
@@ -328,7 +329,7 @@ class DataBase:
                username, \
                address, \
                password) VALUES (%s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql3, (id_lambda, first_name, last_name, username, address, password))
+            cursor.execute(sql3, (id_lambda, first_name, last_name, username2, address, password))
         connection.commit()
 
 

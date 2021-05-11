@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DATABASE'] = 'coviddata'
 app.config['DEBUG'] = True
 
@@ -65,15 +65,15 @@ def createUser(username, first_name, last_name, address, password):
     cur.execute("COMMIT;")
     cur.close()
     print(insertCommand)
-    return newId
+    return True
 
 
-def accountExists(given_userID, given_password):
+def accountExists(given_username, given_password):
     """
     Vérifie si le compte existe dans la bdd.
     """
-    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.id = '%s' AND person.password= '%s');" % (
-        given_userID, given_password))
+    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s' AND person.password= '%s');" % (
+        given_username, given_password))
     res = executeMySqlCommand(isUserValidCommand)
     if res[0][0] == 1:
         return True
@@ -81,12 +81,16 @@ def accountExists(given_userID, given_password):
         return False
 
 
-def isUserEpidemiologist(userId):
+def isUserEpidemiologist(username):
     """
     Vérifie si le compte qui se connecte est un épidemiologiste
     """
+    getUserIdCommand=("SELECT person.id FROM person WHERE person.username = '%s';" % (
+        username))
+    userId = executeMySqlCommand(getUserIdCommand)
     epidemiologistIdCommand = (
-            "SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId)
+            "SELECT EXISTS (SELECT * FROM epidemiologist WHERE epidemiologist.id_person = '%s');" % userId[0][0])
+
     res = executeMySqlCommand(epidemiologistIdCommand)
     if res[0][0] == 1:
         return True
@@ -137,14 +141,14 @@ Les méthodes qui gèrent les pages de l'appli web:
 def login():
     if request.method == "POST":
         session.pop('user', None)
-        given_userID = request.form['userID']
+        given_username = request.form['username']
         given_password = request.form['password']
 
-        if accountExists(given_userID, given_password) and given_password != "" and given_userID != "":
+        if accountExists(given_username, given_password) and given_password != "" and given_username != "":
             global epidemiologist, thisUserId
-            epidemiologist = isUserEpidemiologist(given_userID)
-            thisUserId = given_userID
-            session['user'] = request.form['userID']
+            epidemiologist = isUserEpidemiologist(given_username)
+            thisUserId = given_username
+            session['user'] = request.form['username']
             session.permanent = True
             return redirect(url_for('home'))
         else:
@@ -177,11 +181,9 @@ def register():
                 password != confirm_password):
             return render_template('register.html', label="Informations pas correctes")
         else:
-            id = createUser(username, first_name, last_name, address, password)
-            if id != "":
+            if createUser(username, first_name, last_name, address, password):
                 return render_template('register.html',
-                                       label="Votre compte a été créer, voici votre userID qui vous permettra de vous connecter : %s" % (
-                                           id))
+                                       label="Votre compte a été créer")
             else:
                 return render_template('register.html', label="Le compte n'a pas pu être créer.")
     else:
