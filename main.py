@@ -122,78 +122,78 @@ class DataBase:
     def createClimateTable(self, connection):
         with connection.cursor() as cursor:
             sql = "CREATE TABLE IF NOT EXISTS climate (" \
-                  "id INT(2) unsigned primary key," \
-                  "description TEXT not null )"
+                  "Id INT(2) unsigned primary key," \
+                  "Description TEXT not null )"
             cursor.execute(sql)
 
     def createCountryTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS country (iso_code varchar(3) PRIMARY KEY," \
-                  "continent varchar(20) ," \
-                  "region varchar(50) ," \
-                  "country varchar(50) ," \
-                  "hdi double ," \
-                  "population int(11) unsigned ," \
-                  "area_sq_ml int(11) unsigned ," \
-                  "climate int(2) unsigned," \
-                  "date_first_vacciantion DATETIME," \
+            sql = "CREATE TABLE IF NOT EXISTS country (Iso_code varchar(3) PRIMARY KEY," \
+                  "Continent varchar(20) ," \
+                  "Region varchar(50) ," \
+                  "Country varchar(50) ," \
+                  "Hdi double ," \
+                  "Population int(11) unsigned ," \
+                  "Area_sq_ml int(11) unsigned ," \
+                  "Climate int(2) unsigned," \
+                  "Date_first_vacciantion DATETIME," \
                   "FOREIGN KEY(climate) REFERENCES climate(id)) "
             cursor.execute(sql)
 
     def createVaccineTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS Vaccine(id INT(2) AUTO_INCREMENT PRIMARY KEY," \
-                  "name VARCHAR(30) NOT NULL UNIQUE" \
+            sql = "CREATE TABLE IF NOT EXISTS Vaccine(Id INT(2) AUTO_INCREMENT PRIMARY KEY," \
+                  "Name VARCHAR(30) NOT NULL UNIQUE" \
                   ")"
             cursor.execute(sql)
 
     def createCountryVaccineTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS CountryVaccine(iso_code VARCHAR(3) NOT NULL," \
-                  "vaccine_id int(2) NOT NULL," \
-                  "PRIMARY KEY (iso_code, vaccine_id)," \
-                  "FOREIGN KEY (iso_code) REFERENCES Country(iso_code)," \
-                  "FOREIGN KEY (vaccine_id) REFERENCES vaccine(id))"
+            sql = "CREATE TABLE IF NOT EXISTS CountryVaccine(Iso_code VARCHAR(3) NOT NULL," \
+                  "Vaccine_id int(2) NOT NULL," \
+                  "PRIMARY KEY (Iso_code, Vaccine_id)," \
+                  "FOREIGN KEY (Iso_code) REFERENCES Country(Iso_code)," \
+                  "FOREIGN KEY (Vaccine_id) REFERENCES Vaccine(Id))"
             cursor.execute(sql)
 
     def createVaccinationsTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS vaccinations(iso_code varchar(3) NOT NULL," \
-                  " date DATETIME NOT NULL," \
-                  " tests INT(10) unsigned," \
-                  " vaccinations_done INT(10) unsigned, " \
-                  "PRIMARY KEY(iso_code, date)," \
-                  "FOREIGN KEY (iso_code) REFERENCES country(iso_code))"
+            sql = "CREATE TABLE IF NOT EXISTS Vaccinations(Iso_code varchar(3) NOT NULL," \
+                  " Date DATETIME NOT NULL," \
+                  " Tests INT(10) unsigned," \
+                  " Vaccinations_done INT(10) unsigned, " \
+                  "PRIMARY KEY(Iso_code, Date)," \
+                  "FOREIGN KEY (Iso_code) REFERENCES Country(Iso_code))"
             cursor.execute(sql)
 
     def createPersonTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS person(id VARCHAR(40) PRIMARY KEY , " \
-                  "first_name VARCHAR(20) , " \
-                  "last_name VARCHAR(20)," \
-                  "username VARCHAR(20) unique," \
-                  "address TEXT ," \
-                  "password VARCHAR(100) )"
+            sql = "CREATE TABLE IF NOT EXISTS Person(Id VARCHAR(40) PRIMARY KEY , " \
+                  "First_name VARCHAR(20) , " \
+                  "Last_name VARCHAR(20)," \
+                  "Username VARCHAR(20) unique," \
+                  "Address TEXT ," \
+                  "Password VARCHAR(100) )"
             cursor.execute(sql)
 
     def createEpidemiologistTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS epidemiologist(id_person VARCHAR(40) PRIMARY KEY," \
-                  "center VARCHAR(50) ," \
-                  "service_phone VARCHAR(20) ," \
-                  "FOREIGN KEY (id_person) REFERENCES person(id))"
+            sql = "CREATE TABLE IF NOT EXISTS Epidemiologist(Id_person VARCHAR(40) PRIMARY KEY," \
+                  "Center VARCHAR(50) ," \
+                  "Service_phone VARCHAR(20) ," \
+                  "FOREIGN KEY (Id_person) REFERENCES Person(Id))"
             cursor.execute(sql)
 
     def createHospitalsTable(self, connection):
         with connection.cursor() as cursor:
-            sql = "CREATE TABLE IF NOT EXISTS hospitalsData(id INT AUTO_INCREMENT PRIMARY KEY ," \
-                  "iso_code varchar(3) NOT NULL," \
-                  " date DATE NOT NULL," \
-                  " icu_patients INT(10)  NOT NULL," \
-                  " hosp_patients INT(10)  NOT NULL, " \
-                  " source_epidemiologist VARCHAR(40) NOT NULL," \
-                  "FOREIGN KEY (iso_code) REFERENCES country(iso_code), " \
-                  "FOREIGN KEY (source_epidemiologist) REFERENCES epidemiologist(id_person))"
+            sql = "CREATE TABLE IF NOT EXISTS HospitalsData(id INT AUTO_INCREMENT PRIMARY KEY ," \
+                  "Iso_code varchar(3) NOT NULL," \
+                  " Date DATE NOT NULL," \
+                  " Icu_patients INT(10)  NOT NULL," \
+                  " Hosp_patients INT(10)  NOT NULL, " \
+                  " Source_epidemiologist VARCHAR(40) NOT NULL," \
+                  "FOREIGN KEY (Iso_code) REFERENCES Country(Iso_code), " \
+                  "FOREIGN KEY (Source_epidemiologist) REFERENCES Epidemiologist(Id_person))"
             cursor.execute(sql)
 
     # DDL

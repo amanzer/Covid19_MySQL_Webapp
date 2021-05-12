@@ -27,7 +27,6 @@ app.config['DEBUG'] = True
 # Les variables globales
 mysql = MySQL(app)  # la BDD
 epidemiologist = False  # pour choisir l'interface à afficher
-thisUserId = ""  # Stock l'ID de l'utilisateur connecté
 
 
 def executeMySqlCommand(query):
@@ -58,25 +57,35 @@ def createUser(username, first_name, last_name, address, password):
     """
     Créer un nouvel utilisateur dans la bdd et renvoie le nouveau user ID crée.
     """
-    newId = generate_user_id()
-    insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES (?, ?, ?, ?, ?, ?);"
-    user_args = (newId, first_name, last_name, username, address, generate_password_hash(password))
-    cur = mysql.connection.cursor(prepared=True)
-    cur.execute(insertCommand, user_args)
-    cur.execute("COMMIT;")
-    cur.close()
-    print(insertCommand)
-    return True
+    if usernameExists(username):
+        return False
+    else:
+        newId = generate_user_id()
+        insertCommand = "INSERT INTO person(id, first_name, last_name, username, address, password) VALUES (?, ?, ?, ?, ?, ?);"
+        user_args = (newId, first_name, last_name, username, address, generate_password_hash(password))
+        cur = mysql.connection.cursor(prepared=True)
+        cur.execute(insertCommand, user_args)
+        cur.execute("COMMIT;")
+        cur.close()
+        return True
+
+
+def usernameExists(username):
+    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s');" % (
+        username))
+    res = executeMySqlCommand(isUserValidCommand)
+    if res[0][0] == 1:
+        return True
+    else:
+        return False
+
 
 
 def accountExists(given_username, given_password):
     """
     Vérifie si le compte existe dans la bdd.
     """
-    isUserValidCommand = ("SELECT EXISTS (SELECT * FROM person WHERE person.username = '%s');" % (
-        given_username))
-    res = executeMySqlCommand(isUserValidCommand)
-    if res[0][0] == 1:
+    if usernameExists(given_username):
         getPassword = ("SELECT person.password FROM person WHERE person.username = '%s';" % given_username)
         hashedPass = executeMySqlCommand(getPassword)
         return check_password_hash(hashedPass[0][0], given_password)
@@ -101,28 +110,37 @@ def isUserEpidemiologist(username):
         return False
 
 
+def countryExists(iso_code):
+    isCountryValidCommand = ("SELECT EXISTS (SELECT * FROM Country WHERE Country.iso_code = '%s');" % (
+        iso_code))
+    res = executeMySqlCommand(isCountryValidCommand)
+    if res[0][0] == 1:
+        return True
+    else:
+        return False
+
+
+def getUserId(param):
+    getUserIdCommand = "SELECT person.id FROM person WHERE person.username = '%s' ;" % param
+    return executeMySqlCommand(getUserIdCommand)
+
+
 def addNewDataToHospitals(iso_code, date, icu_patients, hosp_patients):
     """
     Ajoute les données dans la table hospitalsdata
     """
-    cur = mysql.connection.cursor()
-    userId = thisUserId
-    sqlCountryExists = "SELECT EXISTS (SELECT * FROM country WHERE country.iso_code = '%s');" % iso_code
+    cur = mysql.connection.cursor(prepared=True)
+    userId= getUserId(session["user"])
 
-    res = executeMySqlCommand(sqlCountryExists)
-    ttuple = (iso_code, date, icu_patients, hosp_patients, userId)
-    if res[0][0] == 1:
-        insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES (?, ?, ?, ?, ?);"
-        cur.execute(insertCommand, ttuple)
-        cur.execute("COMMIT;")
-    else:
-        sqlInsertCountry = "INSERT INTO country(iso_code) VALUES(?)"
-        cur.execute(sqlInsertCountry, iso_code)
-        insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES (?, ?, ?, ?, ?);"
-        cur.execute(insertCommand, ttuple)
-        cur.execute("COMMIT;")
-    cur.close()
+    ttuple = (iso_code, date, icu_patients, hosp_patients, userId[0][0])
+
+    insertCommand = "INSERT INTO hospitalsdata (iso_code, date, icu_patients, hosp_patients, source_epidemiologist) VALUES (?, ?, ?, ?, ?);"
     print(insertCommand)
+    cur.execute(insertCommand, ttuple)
+    cur.execute("COMMIT;")
+    cur.close()
+
+
 
 
 ########################################################################################################################
@@ -147,9 +165,8 @@ def login():
         given_username = request.form['username']
         given_password = request.form['password']
         if accountExists(given_username, given_password) and given_password != "" and given_username != "":
-            global epidemiologist, thisUserId
+            global epidemiologist
             epidemiologist = isUserEpidemiologist(given_username)
-            thisUserId = given_username
             session['user'] = request.form['username']
             session.permanent = True
             return redirect(url_for('home'))
@@ -164,9 +181,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    global thisUserId
     session.pop('user', None)
-    thisUserId = ""
     return render_template('login.html')
 
 
@@ -267,9 +282,14 @@ def modifyData():
             icu_patients = request.form["icu_patients"]
             hosp_patients = request.form["hosp_patients"]
             if iso_code != "" and date != "" and icu_patients != "" and hosp_patients:
-                addNewDataToHospitals(iso_code, date, icu_patients, hosp_patients)
-                return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
-                                       label="Les données ont été insérer dans la base de données")
+                if countryExists(iso_code) :
+                    addNewDataToHospitals(iso_code, date, icu_patients, hosp_patients)
+
+                    return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
+                                           label="Les données ont été insérer dans la base de données")
+                else:
+                    return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
+                                           label="Ce pays ne se trouve pas dans notre base de données.")
             else:
                 return render_template("modifyHospitalsData.html", userEpi=epidemiologist,
                                        label="Il faut compléter tous les champs")
