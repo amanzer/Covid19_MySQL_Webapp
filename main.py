@@ -1,9 +1,21 @@
+"""
+COVIDATA - 13/05/2021
+
+Authors : Ali, Elias, Ossama
+
+SQL DDL and DML for creating a MySQL database.
+"""
+
+
 import numpy as np
 import pymysql.cursors
 import pandas as pd
 
 
 class Parser:
+    """
+    Lit les données des fichiers csv et remplace les données non existantes par des None.
+    """
     climate = ""
     country = ""
     hospitals = ""
@@ -43,7 +55,7 @@ class Parser:
 
     def get_producers_data(self):
         frame = pd.read_csv(self.producers, sep=";")
-        frame.fillna('')
+        frame = frame.replace({np.NAN: None})
         return frame.iterrows()
 
     def get_vaccinations_data(self):
@@ -53,15 +65,30 @@ class Parser:
 
 
 class DataBase:
+    """
+    Créer la base de donnée coviddata et ses tables puis insère les données receuilli par Parser.
+
+    Il y a 2 utilisateurs tests :
+    user normal
+    username : ali
+    password : password
+
+    et
+
+    user épidemiologiste
+    username : mohamed
+    password : password
+    """
     parser: Parser
 
     def __init__(self, data):
-        connection = pymysql.connect(host='localhost', user='root', password='', database='coviddata', \
+        connection = pymysql.connect(host='localhost', user='root', password='', \
                                      charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
-        self.createAllTables(connection)
-
+        connection.cursor().execute('CREATE database coviddata')
+        connection.select_db('coviddata')
+        self.createAllTables(connection)  # DDL - Data Definition Language
         self.parser = Parser(data)
-        self.insertIntoTables(connection)
+        self.insertIntoTables(connection)  # DML - Data Manipulation Language
 
     def createAllTables(self, connection):
         self.createClimateTable(connection)
@@ -74,18 +101,23 @@ class DataBase:
         self.createHospitalsTable(connection)
         print("Tables creation completed")
 
-
     def insertIntoTables(self, connection):
         self.insertIntoClimate(self.parser.get_climate_data(), connection)
+        print("Data inserted into tables. (1/7)")
         self.insertIntoCountry(self.parser.get_country_data(), connection)
+        print("Data inserted into tables. (2/7)")
         self.insertIntoVaccine(connection)
+        print("Data inserted into tables. (3/7)")
         self.insertIntoVaccineCountry(self.parser.get_producers_data(), connection)
+        print("Data inserted into tables. (4/7)")
         self.insertIntoPersonAndEpidemiologist(self.parser.get_person_and_epidemiologist_data(), connection)
+        print("Data inserted into tables. (5/7)")
         self.insertIntoHospitals(self.parser.get_hospitals_data(), connection)
+        print("Data inserted into tables. (6/7)")
         self.insertIntoVaccinations(self.parser.get_vaccinations_data(), connection)
-        print("Data inserted into tables.")
-        self.insertDevUser( connection)
-
+        print("Data inserted into tables. (7/7)")
+        self.insertDevUser(connection)
+        print("Data insertion completed.")
 
     def createClimateTable(self, connection):
         with connection.cursor() as cursor:
@@ -164,6 +196,10 @@ class DataBase:
                   "FOREIGN KEY (source_epidemiologist) REFERENCES epidemiologist(id_person))"
             cursor.execute(sql)
 
+    # DDL
+    ####################################################################################################################
+    # DML
+
     def insertIntoClimate(self, data, connection):
         for index, elem in data:
             id, description = elem["id"], elem["decription"]
@@ -226,7 +262,7 @@ class DataBase:
                     try:
                         cursor.execute(sql, (elem["iso_code"], switcher.get(vaccine.lstrip(), "error")))
                     except:
-                        # TODO: trouvez un moyen d'ajouter les pays non incluts dans country (facultatif les gars franchement on s'en fou)
+                        # Si l'iso_code n'est pas contenu dans country ou autre raison.
                         continue
 
             connection.commit()
@@ -299,7 +335,7 @@ class DataBase:
     def insertDevUser(self, connection):
 
         id = "dev_epidemiologist"
-        id_lambda= "lambda"
+        id_lambda = "lambda"
         first_name = "mohamed"
         last_name = ""
         username = "mohamed"
@@ -335,6 +371,4 @@ class DataBase:
 
 if __name__ == '__main__':
     files_to_parse = "zip"  # sys.argv[1]
-
     db = DataBase(files_to_parse)
-
